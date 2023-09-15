@@ -1,6 +1,6 @@
 class Config:
     ACT_ID = 'e202009291139501'
-    GENSHIN_ROLE_URL = "https://api-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie?game_biz=hk4e_cn"
+    GENSHIN_ROLE_URL = 'https://api-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie?game_biz={}'.format('hk4e_cn')
     APP_VERSION = '2.34.1'
     USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ' \
                  'miHoYoBBS/{}'.format(APP_VERSION)

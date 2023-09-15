@@ -13,7 +13,7 @@ class SignInfo(object):
     pass
 
 
-class MHYClient(BaseRequest):
+class MHYClient(object):
 
     # 获取用户角色
     def get_user_game_roles(self, cookie: str) -> RoleInfo | None:

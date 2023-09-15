@@ -1,5 +1,4 @@
 import json
-import urllib
 import requests
 import logging as log
 from configs import userConfig
@@ -21,12 +20,6 @@ class HttpRequest:
                 session = requests.Session()
                 result = session.request(method=method, url=url,
                                          params=params, data=data, headers=headers, **kwargs)
-            except urllib.error.HTTPError as e:
-                log.error(f'Http error:{e}')
-                log.error(f'Request {i + 1} failed, retrying...')
-            except KeyError as e:
-                log.error(f'Response error:{e}')
-                log.error(f'Request {i + 1} failed, retrying...')
             except Exception as e:
                 log.error(f'Unknown error:{e}')
                 log.error(f'Request {i + 1} failed, retrying...')
