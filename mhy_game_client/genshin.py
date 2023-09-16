@@ -1,25 +1,19 @@
+import logging
+
+from pydantic import BaseModel
+
 from base.client import MHYClient, RoleInfo, IsSignInfo, SignInfo
 from base.http_client import req, HttpRequest, BaseRequest
 from configs import userConfig
 import logging as log
 
 
-class GenshinRoleInfo(RoleInfo):
-    def __init__(self, region: str, game_uid: str, nickname: str, region_name: str, level: int):
-        self.region = region
-        self.game_uid = game_uid
-        self.nickname = nickname
-        self.region_name = region_name
-        self.level = level
-
-    def __str__(self):
-        return HttpRequest.toJson({
-            "region": self.region,
-            "game_uid": self.game_uid,
-            "nickname": self.nickname,
-            "region_name": self.region_name,
-            "level": self.level
-        }, ensure_ascii=False)
+class GenshinRoleInfo(RoleInfo, BaseModel):
+    region: str
+    game_uid: str
+    nickname: str
+    region_name: str
+    level: int
 
 
 class GenshinIsSignInfo(IsSignInfo):
@@ -31,6 +25,7 @@ class GenshinSignInfo(SignInfo):
 
 
 class GenshinClient(MHYClient):
+
     def get_user_game_roles(self, cookie: str) -> list[GenshinRoleInfo] | None:
         header = BaseRequest(cookie)
         response = {}
@@ -52,13 +47,7 @@ class GenshinClient(MHYClient):
         user_list = []
         user_info = response.get('data', {}).get('list', [])
         for user in user_info:
-            user_list.append(GenshinRoleInfo(
-                user['region'],
-                user['game_uid'],
-                user['nickname'],
-                user['region_name'],
-                user['level']
-            ))
+            user_list.append(GenshinRoleInfo.model_validate(user))
 
         return user_list
 
