@@ -62,7 +62,7 @@ class GenshinClient(MHYClient):
 
         return user_list
 
-    def get_sign_state_info(self, cookie: str) -> GenshinIsSignInfo | None:
+    def get_sign_state_info(self, cookie: str, role_info: GenshinRoleInfo) -> GenshinIsSignInfo | None:
         pass
 
     def sign(self, cookie: str) -> GenshinSignInfo | None:

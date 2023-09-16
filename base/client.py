@@ -20,7 +20,7 @@ class MHYClient(object):
         raise NotImplementedError('Method not implemented!')
 
     # 获取用户是否签到
-    def get_sign_state_info(self, cookie: str) -> IsSignInfo | None:
+    def get_sign_state_info(self, cookie: str, role_info: RoleInfo) -> IsSignInfo | None:
         raise NotImplementedError('Method not implemented!')
 
     def sign(self, cookie: str) -> SignInfo | None:
