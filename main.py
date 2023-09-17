@@ -9,6 +9,9 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
     load_dotenv()
-    roles = genshinClient.get_user_game_roles(os.getenv("COOKIE"))
-    for r in roles:
-        logging.info(r)
+    cookie = os.getenv("COOKIE")
+    info = genshinClient.get_sign_state_info(cookie, "cn_gf01", "105827582")
+    logging.info(info)
+    # roles = genshinClient.get_user_game_roles(cookie)
+    # for r in roles:
+    #     logging.info(r)

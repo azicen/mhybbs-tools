@@ -16,8 +16,15 @@ class GenshinRoleInfo(RoleInfo, BaseModel):
     level: int
 
 
-class GenshinIsSignInfo(IsSignInfo):
-    pass
+class GenshinIsSignInfo(IsSignInfo, BaseModel):
+    total_sign_day: int
+    today: str
+    is_sign: bool
+    first_bind: bool
+    is_sub: bool
+    month_first: bool
+    sign_cnt_missed: int
+    month_last_day: bool
 
 
 class GenshinSignInfo(SignInfo):
@@ -51,8 +58,22 @@ class GenshinClient(MHYClient):
 
         return user_list
 
-    def get_sign_state_info(self, cookie: str, role_info: GenshinRoleInfo) -> GenshinIsSignInfo | None:
-        pass
+    def get_sign_state_info(self, cookie, region: str, uid: int) -> GenshinIsSignInfo | None:
+        header = BaseRequest(cookie)
+        log.info(f"正在验证id:{uid}签到信息")
+        try:
+            response = HttpRequest.toPython(
+                req.sendRequest('get', userConfig.INFO_URL.format(region, userConfig.ACT_ID, uid),
+                                headers=header.getHeader()).text)
+        except Exception as e:
+            log.error(e)
+            return None
+
+        info = response.get('data')
+        if info is None:
+            return info
+
+        return GenshinIsSignInfo.model_validate(info)
 
     def sign(self, cookie: str) -> GenshinSignInfo | None:
         pass

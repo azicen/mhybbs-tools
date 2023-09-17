@@ -7,6 +7,7 @@ class Config:
     REFERER_URL = 'https://webstatic.mihoyo.com/bbs/event/signin-ys/index.html?' \
                   'bbs_auth_required={}&act_id={}&utm_source={}&utm_medium={}&' \
                   'utm_campaign={}'.format('true', ACT_ID, 'bbs', 'mys', 'icon')
+    INFO_URL = 'https://api-takumi.mihoyo.com/event/bbs_sign_reward/info?region={}&act_id={}&uid={}'
 
 
 userConfig = Config()
