@@ -1,3 +1,8 @@
+import hashlib
+import random
+import string
+import time
+
 from base.http_client import BaseRequest
 
 
@@ -14,6 +19,15 @@ class SignInfo(object):
 
 
 class MHYClient(object):
+
+    @staticmethod
+    def getDigest():
+        # v2.3.0-web @povsister & @journey-ad
+        n = '9nQiU3AV0rJSIBWgdynfoGMGKaklfbM7'
+        i = str(int(time.time()))
+        r = ''.join(random.sample(string.ascii_lowercase + string.digits, 6))
+        md5 = hashlib.md5()
+        return '{},{},{}'.format(i, r, md5.update(('salt=' + n + '&t=' + i + '&r=' + r).encode()))
 
     # 获取用户角色
     def get_user_game_roles(self, cookie: str) -> list[RoleInfo] | None:

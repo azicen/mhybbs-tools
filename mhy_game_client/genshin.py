@@ -1,4 +1,6 @@
 import logging
+import time
+import uuid
 
 from pydantic import BaseModel
 
@@ -10,7 +12,7 @@ import logging as log
 
 class GenshinRoleInfo(RoleInfo, BaseModel):
     region: str
-    game_uid: str
+    game_uid: int
     nickname: str
     region_name: str
     level: int
@@ -76,7 +78,47 @@ class GenshinClient(MHYClient):
         return GenshinIsSignInfo.model_validate(info)
 
     def sign(self, cookie: str) -> GenshinSignInfo | None:
-        pass
+        roles = self.get_user_game_roles(cookie)
+        if roles is None:
+            log.error("获取角色信息失败")
+
+        for r in roles:
+            sign_info = self.get_sign_state_info(cookie, r.region, r.game_uid)
+            if sign_info is None:
+                log.error("获取角色签到信息失败")
+
+            if sign_info.first_bind is True:
+                log.error("请先手动签到一次")
+
+            if sign_info.is_sign is True:
+                log.info(f"{r.game_uid}今天已经签到过了")
+
+            log.info(f"名字:{r.nickname} 签到中......")
+            time.sleep(1.5)
+
+            header = BaseRequest(cookie)
+            header.getHeader().update({
+                'x-rpc-device_id': str(uuid.uuid3(
+                    uuid.NAMESPACE_URL, cookie)).replace('-', '').upper(),
+                'x-rpc-client_type': '5',
+                'x-rpc-app_version': userConfig.APP_VERSION,
+                'DS': self.getDigest(),
+            })
+
+            sign_data = {
+                'act_id': userConfig.ACT_ID,
+                'region': r.region,
+                'uid': r.game_uid
+            }
+
+            # TODO 签到失败
+            response = HttpRequest.toPython(
+                req.sendRequest(method='post', url=userConfig.SIGN_URL, headers=header.getHeader(),
+                                data=HttpRequest.toJson(sign_data,
+                                                        ensure_ascii=False)).text)
+            print(response)
+
+        return None
 
 
 genshinClient = GenshinClient()
