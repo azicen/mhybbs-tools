@@ -29,15 +29,15 @@ class GenshinIsSignInfo(IsSignInfo, BaseModel):
     month_last_day: bool
 
 
-class GenshinSignInfo(SignInfo):
-    pass
+class GenshinSignInfo(SignInfo, BaseModel):
+    retcode: int
+    message: str
 
 
 class GenshinClient(MHYClient):
 
     def get_user_game_roles(self, cookie: str) -> list[GenshinRoleInfo] | None:
         header = BaseRequest(cookie)
-        response = {}
         try:
             log.info("获取原神账号信息")
             response = HttpRequest.toPython(
@@ -52,6 +52,7 @@ class GenshinClient(MHYClient):
 
         if response.get('retcode', 1) != 0 or response.get('data', None) is None:
             log.error(message)
+            return None
 
         user_list = []
         user_info = response.get('data', {}).get('list', [])
@@ -67,9 +68,13 @@ class GenshinClient(MHYClient):
             response = HttpRequest.toPython(
                 req.sendRequest('get', userConfig.INFO_URL.format(region, userConfig.ACT_ID, uid),
                                 headers=header.getHeader()).text)
+
         except Exception as e:
             log.error(e)
             return None
+
+        if response is None:
+            log.error("没有找到签到信息")
 
         info = response.get('data')
         if info is None:
@@ -81,6 +86,7 @@ class GenshinClient(MHYClient):
         roles = self.get_user_game_roles(cookie)
         if roles is None:
             log.error("获取角色信息失败")
+            return None
 
         for r in roles:
             sign_info = self.get_sign_state_info(cookie, r.region, r.game_uid)
@@ -111,6 +117,7 @@ class GenshinClient(MHYClient):
                 'uid': r.game_uid
             }
 
+            response = {}
             try:
                 response = HttpRequest.toPython(
                     req.sendRequest(method='post', url=userConfig.SIGN_URL, headers=header,
@@ -119,9 +126,8 @@ class GenshinClient(MHYClient):
             except Exception as e:
                 log.error(e)
 
-            print(response)
-
-        return None
+            info = GenshinSignInfo.model_validate(response)
+            return info
 
 
 genshinClient = GenshinClient()
