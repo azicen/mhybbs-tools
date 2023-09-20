@@ -26,8 +26,11 @@ class MHYClient(object):
         n = '9nQiU3AV0rJSIBWgdynfoGMGKaklfbM7'
         i = str(int(time.time()))
         r = ''.join(random.sample(string.ascii_lowercase + string.digits, 6))
+        text = 'salt=' + n + '&t=' + i + '&r=' + r
         md5 = hashlib.md5()
-        return '{},{},{}'.format(i, r, md5.update(('salt=' + n + '&t=' + i + '&r=' + r).encode()))
+        md5.update(text.encode())
+        c = md5.hexdigest()
+        return '{},{},{}'.format(i, r, c)
 
     # 获取用户角色
     def get_user_game_roles(self, cookie: str) -> list[RoleInfo] | None:

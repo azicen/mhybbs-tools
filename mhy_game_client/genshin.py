@@ -96,8 +96,8 @@ class GenshinClient(MHYClient):
             log.info(f"名字:{r.nickname} 签到中......")
             time.sleep(1.5)
 
-            header = BaseRequest(cookie)
-            header.getHeader().update({
+            header = BaseRequest(cookie).getHeader()
+            header.update({
                 'x-rpc-device_id': str(uuid.uuid3(
                     uuid.NAMESPACE_URL, cookie)).replace('-', '').upper(),
                 'x-rpc-client_type': '5',
@@ -111,11 +111,14 @@ class GenshinClient(MHYClient):
                 'uid': r.game_uid
             }
 
-            # TODO 签到失败
-            response = HttpRequest.toPython(
-                req.sendRequest(method='post', url=userConfig.SIGN_URL, headers=header.getHeader(),
-                                data=HttpRequest.toJson(sign_data,
-                                                        ensure_ascii=False)).text)
+            try:
+                response = HttpRequest.toPython(
+                    req.sendRequest(method='post', url=userConfig.SIGN_URL, headers=header,
+                                    data=HttpRequest.toJson(sign_data,
+                                                            ensure_ascii=False)).text)
+            except Exception as e:
+                log.error(e)
+
             print(response)
 
         return None
