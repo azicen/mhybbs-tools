@@ -75,9 +75,9 @@ class GenshinClient(MHYClient):
 
         return GenshinIsSignInfo.model_validate(response.get('data'))
 
-    def sign(self, cookie: str) -> GenshinSignInfo:
+    def sign(self, cookie: str) -> list[GenshinSignInfo]:
         roles = self.get_user_game_roles(cookie)
-
+        info_list = []
         for r in roles:
             sign_info = self.get_sign_state_info(cookie, r.region, r.game_uid)
 
@@ -86,7 +86,6 @@ class GenshinClient(MHYClient):
 
             if sign_info.is_sign is True:
                 log.info(f"{r.game_uid}今天已经签到过了")
-                continue
 
             log.info(f"名字:{r.nickname} 签到中......")
             time.sleep(1.5)
@@ -106,16 +105,15 @@ class GenshinClient(MHYClient):
                 'uid': r.game_uid
             }
 
-            response = {}
             try:
                 response = HttpRequest.toPython(
                     req.sendRequest(method='post', url=userConfig.SIGN_URL, headers=header,
                                     data=HttpRequest.toJson(sign_data,
                                                             ensure_ascii=False)).text)
+                info_list.append(GenshinSignInfo.model_validate(response))
             except Exception as e:
                 raise e
-
-            return GenshinSignInfo.model_validate(response)
+        return info_list
 
 
 genshinClient = GenshinClient()

@@ -37,5 +37,5 @@ class MHYClient(object):
     def get_sign_state_info(self, cookie, region: str, uid: int) -> IsSignInfo:
         raise NotImplementedError('Method not implemented!')
 
-    def sign(self, cookie: str) -> SignInfo:
+    def sign(self, cookie: str) -> list[SignInfo]:
         raise NotImplementedError('Method not implemented!')
