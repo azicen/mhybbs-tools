@@ -75,45 +75,34 @@ class GenshinClient(MHYClient):
 
         return GenshinIsSignInfo.model_validate(response.get('data'))
 
-    def sign(self, cookie: str) -> list[GenshinSignInfo]:
-        roles = self.get_user_game_roles(cookie)
-        info_list = []
-        for r in roles:
-            sign_info = self.get_sign_state_info(cookie, r.region, r.game_uid)
+    def sign(self, cookie, region: str, uid: int) -> bool:
 
-            if sign_info.first_bind is True:
-                log.error("请先手动签到一次")
+        header = BaseRequest(cookie).getHeader()
+        header.update({
+            'x-rpc-device_id': str(uuid.uuid3(
+                uuid.NAMESPACE_URL, cookie)).replace('-', '').upper(),
+            'x-rpc-client_type': '5',
+            'x-rpc-app_version': userConfig.APP_VERSION,
+            'DS': self.getDigest(),
+        })
 
-            if sign_info.is_sign is True:
-                log.info(f"{r.game_uid}今天已经签到过了")
+        sign_data = {
+            'act_id': userConfig.ACT_ID,
+            'region': region,
+            'uid': uid
+        }
 
-            log.info(f"名字:{r.nickname} 签到中......")
-            time.sleep(1.5)
+        try:
+            response = HttpRequest.toPython(
+                req.sendRequest(method='post', url=userConfig.SIGN_URL, headers=header,
+                                data=HttpRequest.toJson(sign_data, ensure_ascii=False)).text)
+        except Exception as e:
+            raise e
 
-            header = BaseRequest(cookie).getHeader()
-            header.update({
-                'x-rpc-device_id': str(uuid.uuid3(
-                    uuid.NAMESPACE_URL, cookie)).replace('-', '').upper(),
-                'x-rpc-client_type': '5',
-                'x-rpc-app_version': userConfig.APP_VERSION,
-                'DS': self.getDigest(),
-            })
+        if response.get('retcode', 1) != 0 or response.get('data', None) is None:
+            raise MihoyoBBSException(response)
 
-            sign_data = {
-                'act_id': userConfig.ACT_ID,
-                'region': r.region,
-                'uid': r.game_uid
-            }
-
-            try:
-                response = HttpRequest.toPython(
-                    req.sendRequest(method='post', url=userConfig.SIGN_URL, headers=header,
-                                    data=HttpRequest.toJson(sign_data,
-                                                            ensure_ascii=False)).text)
-                info_list.append(GenshinSignInfo.model_validate(response))
-            except Exception as e:
-                raise e
-        return info_list
+        return True
 
 
 genshinClient = GenshinClient()
