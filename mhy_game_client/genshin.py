@@ -1,5 +1,4 @@
 import logging
-import time
 import uuid
 
 from pydantic import BaseModel
@@ -37,6 +36,7 @@ class GenshinSignInfo(SignInfo, BaseModel):
 
 class GenshinClient(MHYClient):
 
+    # 获取用户角色信息
     def get_user_game_roles(self, cookie: str) -> list[GenshinRoleInfo]:
         header = BaseRequest(cookie)
         try:
@@ -56,9 +56,11 @@ class GenshinClient(MHYClient):
         user_info = response.get('data', {}).get('list', [])
         for user in user_info:
             user_list.append(GenshinRoleInfo.model_validate(user))
+        logging.info(f"共有{len(user_list)}个角色")
 
         return user_list
 
+    # 获取角色签到信息
     def get_sign_state_info(self, cookie, region: str, uid: int) -> GenshinIsSignInfo:
         header = BaseRequest(cookie)
         log.info(f"正在验证id:{uid}签到信息")
@@ -73,8 +75,11 @@ class GenshinClient(MHYClient):
         if response.get('retcode', 1) != 0 or response.get('data', None) is None:
             raise MihoyoBBSException(response)
 
+        logging.info(f"角色签到信息{response}")
+
         return GenshinIsSignInfo.model_validate(response.get('data'))
 
+    # 角色签到
     def sign(self, cookie, region: str, uid: int) -> bool:
 
         header = BaseRequest(cookie).getHeader()

@@ -10,4 +10,10 @@ logging.basicConfig(level=logging.INFO)
 if __name__ == '__main__':
     load_dotenv()
     cookie = os.getenv("COOKIE")
-    print(genshinClient.sign(cookie))
+    user_list = genshinClient.get_user_game_roles(cookie)
+    for user in user_list:
+        sign_info = genshinClient.get_sign_state_info(cookie,user.region,user.game_uid)
+        if sign_info.is_sign is False:
+            genshinClient.sign(cookie, "cn_gf01", 201791460)
+        else:
+            logging.info("用户已签到")
