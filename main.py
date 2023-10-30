@@ -14,6 +14,5 @@ if __name__ == '__main__':
     for user in user_list:
         sign_info = genshinClient.get_sign_state_info(cookie,user.region,user.game_uid)
         if sign_info.is_sign is False:
-            genshinClient.sign(cookie, "cn_gf01", 201791460)
-        else:
-            logging.info("用户已签到")
+            genshinClient.sign(cookie, user.region, user.game_uid)
+

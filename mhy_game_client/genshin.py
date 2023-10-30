@@ -77,7 +77,11 @@ class GenshinClient(MHYClient):
 
         logging.info(f"角色签到信息{response}")
 
-        return GenshinIsSignInfo.model_validate(response.get('data'))
+        sign_info = GenshinIsSignInfo.model_validate(response.get('data'))
+        if sign_info.is_sign:
+            logging.info(f"{uid}已签到")
+
+        return sign_info
 
     # 角色签到
     def sign(self, cookie, region: str, uid: int) -> bool:
@@ -107,6 +111,7 @@ class GenshinClient(MHYClient):
         if response.get('retcode', 1) != 0 or response.get('data', None) is None:
             raise MihoyoBBSException(response)
 
+        logging.info(f"{uid}签到成功")
         return True
 
 
