@@ -1,7 +1,7 @@
 import json
-import requests
+import aiohttp
 import logging as log
-from configs import userConfig
+from base import constant
 
 
 class HttpRequest:
@@ -13,19 +13,34 @@ class HttpRequest:
     def toJson(data, indent=None, ensure_ascii=True):
         return json.dumps(data, indent=indent, ensure_ascii=ensure_ascii)
 
-    def sendRequest(self, method, url, maxRetry: int = 2,
-                    params=None, data=None, json=None, headers=None, **kwargs):
+    async def sendRequest(
+        self,
+        method,
+        url,
+        maxRetry: int = 2,
+        params=None,
+        data=None,
+        json=None,
+        headers=None,
+        **kwargs,
+    ) -> aiohttp.ClientResponse:
         for i in range(maxRetry + 1):
             try:
-                session = requests.Session()
-                result = session.request(method=method, url=url,
-                                         params=params, data=data, headers=headers, **kwargs)
+                async with aiohttp.ClientSession() as session:
+                    response = await session.request(
+                        method=method,
+                        url=url,
+                        params=params,
+                        data=data,
+                        headers=headers,
+                        **kwargs,
+                    )
             except Exception as e:
-                log.error(f'Unknown error:{e}')
-                log.error(f'Request {i + 1} failed, retrying...')
+                log.error(f"Unknown error:{e}")
+                log.error(f"Request {i + 1} failed, retrying...")
             else:
-                return result
-        log.error(f'Http request failed...')
+                return response
+        log.error(f"Http request failed...")
 
 
 req = HttpRequest()
@@ -34,16 +49,18 @@ req = HttpRequest()
 class BaseRequest(object):
     def __init__(self, cookies: str = None):
         if not isinstance(cookies, str):
-            log.error("Type Error: %s want a %s but got a %s"
-                      .format(self.__class__, type(__name__), type(cookies)))
+            log.error(
+                f"Type Error: {self.__class__} want a {type(__name__)} but got a {type(cookies)}"
+            )
             return
         self._cookies = cookies
 
     def getHeader(self):
         header = {
-            'User-Agent': userConfig.USER_AGENT,
-            'Referer': userConfig.REFERER_URL,
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Cookie': self._cookies
+            "Origin": constant.Origin_URL,
+            "User-Agent": constant.USER_AGENT,
+            "Referer": constant.REFERER_URL,
+            "Accept-Encoding": "gzip, deflate, br",
+            "Cookie": self._cookies,
         }
         return header

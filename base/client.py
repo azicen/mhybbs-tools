@@ -8,7 +8,7 @@ class RoleInfo(object):
     pass
 
 
-class IsSignInfo(object):
+class LunaInfo(object):
     pass
 
 
@@ -34,7 +34,7 @@ class MHYClient(object):
         raise NotImplementedError('Method not implemented!')
 
     # 获取用户是否签到
-    def get_sign_state_info(self, cookie, region: str, uid: int) -> IsSignInfo:
+    def get_sign_state_info(self, cookie, region: str, uid: int) -> LunaInfo:
         raise NotImplementedError('Method not implemented!')
 
     def sign(self, cookie, region: str, uid: int) -> bool:
