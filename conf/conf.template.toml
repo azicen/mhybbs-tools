@@ -1,0 +1,8 @@
+cookie = ""
+
+[act]
+genshin_impact = true
+honkai_star_rail = true
+
+[job]
+trigger_time = "8:30"
