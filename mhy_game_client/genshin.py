@@ -7,7 +7,8 @@ from base.api_error import MihoyoBBSException
 from base.client import MHYClient, RoleInfo, LunaInfo, SignInfo
 from base.http_client import req, HttpRequest, BaseRequest
 from base import constant
-import logging as log
+
+logger = logging.getLogger(__name__)
 
 
 class GenshinBaseRequest(BaseRequest):
@@ -45,7 +46,7 @@ class GenshinClient(MHYClient):
     async def get_user_game_roles(self, cookie: str) -> list[GenshinRoleInfo]:
         header = GenshinBaseRequest(cookie)
         try:
-            log.info("获取原神账号信息")
+            logger.info("获取原神账号信息")
             response = await req.sendRequest(
                 "get", constant.GENSHIN_ROLE_URL, headers=header.getHeader()
             )
@@ -53,25 +54,27 @@ class GenshinClient(MHYClient):
             data_dict = HttpRequest.toPython(text)
             message = data_dict["message"]
         except Exception as e:
-            log.error(f"{e}")
+            logger.error(f"{e}")
             raise e
 
         if data_dict.get("retcode", 1) != 0 or data_dict.get("data", None) is None:
-            log.error(message)
+            logger.error(message)
             raise MihoyoBBSException(data_dict)
 
         user_list = []
         user_info = data_dict.get("data", {}).get("list", [])
         for user in user_info:
             user_list.append(GenshinRoleInfo.model_validate(user))
-        logging.info(f"共有{len(user_list)}个角色")
+        logger.info(f"共有{len(user_list)}个角色")
 
         return user_list
 
     # 获取角色签到信息
-    async def get_sign_state_info(self, cookie, region: str, uid: int) -> GenshinLunaInfo:
+    async def get_sign_state_info(
+        self, cookie, region: str, uid: int
+    ) -> GenshinLunaInfo:
         header = GenshinBaseRequest(cookie)
-        log.info(f"正在验证id:{uid}签到信息")
+        logger.info(f"正在验证id:{uid}签到信息")
         try:
             response = await req.sendRequest(
                 "get",
@@ -86,11 +89,11 @@ class GenshinClient(MHYClient):
         if data_dict.get("retcode", 1) != 0 or data_dict.get("data", None) is None:
             raise MihoyoBBSException(data_dict)
 
-        logging.info(f"角色签到信息{data_dict}")
+        logger.info(f"角色签到信息{data_dict}")
 
         sign_info = GenshinLunaInfo.model_validate(data_dict.get("data"))
         if sign_info.is_sign:
-            logging.info(f"{uid}已签到")
+            logger.info(f"{uid}已签到")
 
         return sign_info
 
@@ -130,7 +133,7 @@ class GenshinClient(MHYClient):
         if data_dict.get("retcode", 1) != 0 or data_dict.get("data", None) is None:
             raise MihoyoBBSException(data_dict)
 
-        logging.info(f"{uid}签到成功")
+        logger.info(f"{uid}签到成功")
         return True
 
 

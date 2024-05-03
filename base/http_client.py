@@ -1,7 +1,9 @@
 import json
+import logging
 import aiohttp
-import logging as log
 from base import constant
+
+logger = logging.getLogger(__name__)
 
 
 class HttpRequest:
@@ -36,11 +38,11 @@ class HttpRequest:
                         **kwargs,
                     )
             except Exception as e:
-                log.error(f"Unknown error:{e}")
-                log.error(f"Request {i + 1} failed, retrying...")
+                logger.error(f"Unknown error:{e}")
+                logger.error(f"Request {i + 1} failed, retrying...")
             else:
                 return response
-        log.error(f"Http request failed...")
+        logger.error(f"Http request failed...")
 
 
 req = HttpRequest()
@@ -49,7 +51,7 @@ req = HttpRequest()
 class BaseRequest(object):
     def __init__(self, cookies: str = None):
         if not isinstance(cookies, str):
-            log.error(
+            logger.error(
                 f"Type Error: {self.__class__} want a {type(__name__)} but got a {type(cookies)}"
             )
             return
