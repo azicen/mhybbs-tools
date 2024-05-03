@@ -3,10 +3,10 @@ name: Build Docker Image
 on:
   workflow_dispatch: # 手动触发
 
-  # 创建 tag 时触发
+  # 创建 v 开头的 tag 时触发
   push:
     tags:
-      - "*"
+      - v*
 
 env:
   REGISTRY: ghcr.io
@@ -59,7 +59,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 根据输入自动生成 tag 和 label 等数据，说明见下
+      # 根据输入自动生成 tag 和 label 等数据
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -75,7 +75,9 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
