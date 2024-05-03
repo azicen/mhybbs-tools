@@ -1,8 +1,37 @@
 # mhybbs-tools
 
-## 使用
+米游社签到工具
 
-每个`.toml`配置文件配置一个需要米游社签到的账号, 配置文件模板在`./conf/conf.template.toml`
+
+## 功能
+
+- [x] 原神签到
+- [x] 星穹铁道签到
+
+
+## 用户配置
+
+每个`*.toml`文件配置一个需要米游社签到的账号。
+
+配置文件模板位置: `./conf/conf.template.toml`。
+
+```toml
+# 账户cookie
+cookie = ""
+
+[act]
+# 是否进行米游社原神签到
+genshin_impact = true
+# 是否进行米游社星穹铁道签到
+honkai_star_rail = true
+
+[job]
+# 预计每日签到的时间
+trigger_time = "8:30"
+```
+
+
+## 使用
 
 ### 快速启动
 
@@ -15,6 +44,37 @@ vim ./config/user.toml
 
 python main.py
 ```
+
+
+### 通过docker部署
+```sh
+docker run \
+  -e TZ="Asia/Shanghai" \
+  -e CONFIG_DIR="/app/config" \
+  -e JOB_TIME_INTERVAL=30 \
+  -e USER_INTERVAL=5 \
+  -v "./config:/app/config" \
+  ghcr.io/azicen/mhybbs-tools:latest
+```
+
+
+### 通过docker-compose部署
+```yaml
+version: '3.8'
+
+services:
+  mhybbs-tools:
+    image: "ghcr.io/azicen/mhybbs-tools:latest"
+    container_name: mhybbs-tools
+    environment:
+      TZ: "Asia/Shanghai"
+      CONFIG_DIR: "/app/config"
+      JOB_TIME_INTERVAL: 30
+      USER_INTERVAL: 5
+    volumes:
+      - "./config:/app/config"
+```
+
 
 ## 环境变量
 

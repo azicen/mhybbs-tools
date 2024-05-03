@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mhybbs-tools:
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+    image: "ghcr.io/azicen/mhybbs-tools:latest"
+    container_name: mhybbs-tools
+    environment:
+      TZ: "Asia/Shanghai"
+      CONFIG_DIR: "/app/config"
+      JOB_TIME_INTERVAL: 30
+      USER_INTERVAL: 5
+    volumes:
+      - "./config:/app/config"
