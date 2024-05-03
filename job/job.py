@@ -19,7 +19,7 @@ CONFIG_DIR = os.environ.get("CONFIG_DIR", os.path.join(os.getcwd(), "config"))
 # JOB每次执行的时间间隔, 默认: 30分钟
 JOB_TIME_INTERVAL = int(os.environ.get("JOB_TIME_INTERVAL", 30))
 
-# 两个用户之间的签到时间间隔, 默认: 5分钟, 用户数量 x USER_INTERVAL 应该大于 JOB_TIME_INTERVAL
+# 两个用户之间的签到时间间隔, 默认: 5分钟, 用户数量 x USER_INTERVAL 应该小于 JOB_TIME_INTERVAL
 USER_INTERVAL = int(os.environ.get("USER_INTERVAL", 5)) * 60
 
 
