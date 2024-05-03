@@ -1,8 +1,12 @@
+# 账户cookie
 cookie = ""
 
 [act]
+# 是否进行米游社原神签到
 genshin_impact = true
+# 是否进行米游社星穹铁道签到
 honkai_star_rail = true
 
 [job]
+# 预计每日签到的时间
 trigger_time = "8:30"
