@@ -1,4 +1,4 @@
-FROM python:3.10.14-slim-bookworm
+FROM python:3.10-slim-bookworm
 
 ENV PYTHONUNBUFFERED=1 PIP_BREAK_SYSTEM_PACKAGES=1
 
