@@ -51,11 +51,14 @@ python main.py
 ### 通过docker部署
 ```sh
 docker run \
+  --name mhybbs-tools \
+  --restart=always \
   -e TZ="Asia/Shanghai" \
   -e CONFIG_DIR="/app/config" \
   -e JOB_TIME_INTERVAL=30 \
   -e USER_INTERVAL=5 \
   -v "./config:/app/config" \
+  -d \
   ghcr.io/azicen/mhybbs-tools:latest
 ```
 
