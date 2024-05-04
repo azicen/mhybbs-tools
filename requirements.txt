@@ -1,5 +1,4 @@
 aiohttp
-aioschedule
 python-dotenv
 pydantic
 toml

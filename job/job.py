@@ -3,8 +3,7 @@ import glob
 import os
 import logging
 import asyncio
-import aioschedule as schedule
-from datetime import datetime
+from datetime import datetime, timedelta
 from conf.config import Config
 from base.api_error import MihoyoBBSException
 from conf.config import Config
@@ -195,9 +194,12 @@ async def job():
 
 async def run():
     logger.info("开启Job...")
-    # 默认每半小时执行一次, 修改`JOB_TIME_INTERVAL`环境变量
-    schedule.every(JOB_TIME_INTERVAL).minutes.do(job)
+    previous_time = datetime.now()
     await job()
     while True:
-        await schedule.run_pending()
+        difference = datetime.now() - previous_time
+        if difference >= timedelta(JOB_TIME_INTERVAL):
+            # 默认每半小时执行一次, 修改`JOB_TIME_INTERVAL`环境变量
+            previous_time = datetime.now()
+            await job()
         await asyncio.sleep(USER_INTERVAL)

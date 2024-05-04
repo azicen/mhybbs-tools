@@ -36,6 +36,8 @@ trigger_time = "8:30"
 ### 快速启动
 
 ```sh
+pip install -r requirements.txt
+
 mkdir ./config
 cp ./conf/conf.template.toml ./config/user.toml
 
