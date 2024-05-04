@@ -18,6 +18,6 @@ class Config(BaseModel):
 
     @staticmethod
     def load(path) -> "Config":
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             config_data = toml.load(f)
             return Config(**config_data)
