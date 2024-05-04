@@ -198,7 +198,7 @@ async def run():
     await job()
     while True:
         difference = datetime.now() - previous_time
-        if difference >= timedelta(JOB_TIME_INTERVAL):
+        if difference >= timedelta(minutes=JOB_TIME_INTERVAL):
             # 默认每半小时执行一次, 修改`JOB_TIME_INTERVAL`环境变量
             previous_time = datetime.now()
             await job()
