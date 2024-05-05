@@ -51,8 +51,13 @@ class SignRecord:
     def honkai_star_rail_done_sign(self, game_uid: int) -> None:
         self.honkai_star_rail[game_uid] = True
 
+    def clear(self)  -> None:
+        self.config = dict()
+        self.genshin_impact = dict()
+        self.honkai_star_rail = dict()
 
-previous_time = datetime.now()
+
+previous_time = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 sign_record = SignRecord()
 
 
@@ -158,13 +163,13 @@ async def job():
 
     logger.info("执行Job任务...")
 
-    current_time = datetime.now()
+    current_time = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     difference = current_time - previous_time
     if difference.days >= 1:
         # 第二天, 清空签到记录
         logger.info("已清空前一天签到记录。")
-        previous_time = datetime.now()
-        sign_record = SignRecord()
+        previous_time = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        sign_record.clear()
 
     toml_files = glob.glob(pathname="*.toml", root_dir=CONFIG_DIR)
 
