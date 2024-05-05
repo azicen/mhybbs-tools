@@ -150,10 +150,6 @@ async def honkai_star_rail_sign(config: Config) -> bool:
 async def task(config_path: str, config: Config):
     global sign_record
 
-    if sign_record.config_is_sign(config_path):
-        logger.info(f"跳过配置文件: {config_path}, 已完成所有签到。")
-        return
-
     if all([await genshin_impact_sign(config), await honkai_star_rail_sign(config)]):
         sign_record.config_done_sign(config_path)
 
@@ -177,6 +173,10 @@ async def job():
 
     while len(queue) > 0:
         file_path = queue.pop()
+
+        if sign_record.config_is_sign(file_path):
+            logger.info(f"跳过配置文件: {file_path}, 已完成所有签到。")
+            continue
 
         logger.info(f"读取配置文件: {file_path}")
         config = Config.load(file_path)
